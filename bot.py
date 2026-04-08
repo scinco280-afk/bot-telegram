@@ -10,7 +10,7 @@ from telegram.ext import (
 )
 
 TOKEN = os.getenv("TOKEN")
-
+TOKEN = "8767843965:AAEbR4tPcHgkk2Mdee-6TOrSMR4d0hL1Gz0"
 if not TOKEN:
     raise ValueError("TOKEN NÃO ESTÁ VINDO DO RAILWAY!")
 
