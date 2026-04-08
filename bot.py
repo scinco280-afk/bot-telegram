@@ -31,12 +31,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # FOTO PRÉVIA
     with open("previa.mp4", "rb") as video:
-    await update.message.reply_video(
-        video=video,
-        caption="😈 isso aqui é só uma prévia...\n\n"
-                "o resto eu não mostro aqui..."
-    ),
+        await update.message.reply_video(
+            video=video,
+            caption="😈 isso aqui é só uma prévia...\n\n"
+                    "o resto eu não mostro aqui..."
         )
+
 
     # BOTÕES
     keyboard = [
