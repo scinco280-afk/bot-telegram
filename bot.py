@@ -1,95 +1,151 @@
+import os
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    ContextTypes,
+    filters,
+)
 
-TOKEN = "8767843965:AAGrX0PMcBFv7dyUEDf8WCFY2rmyMLaHKc4"
+TOKEN = os.getenv("8767843965:AAGrX0PMcBFv7dyUEDf8WCFY2rmyMLaHKc4")
 
 LINK_25 = "https://pay.kirvano.com/962361f0-a5d2-41e8-82a6-422f0b315cb8"
-LINK_60 = "https://pay.kirvano.com/2cf99dcd-fa55-43d3-9f05-d14b0be067fe"
+LINK_60 = "https://pay.kirvano.com/7af1874d-b810-4366-964c-8d14c1fe581c"
 
-GRUPO_25 = "https://t.me/+p9W67fbwwOdjMzFh"
-GRUPO_60 = "https://t.me/+cnEDZw7j0gowOWFh"
+GRUPO_25 = "t.me/melvalierr"
+GRUPO_60 = "t.me/melvaliervip"
 
-# Quando entra no bot
+# =========================
+# START
+# =========================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    
-    await update.message.reply_text("oi amor... 😏")
 
-    with open("previa.jpg", "rb") as foto:
-        await update.message.reply_photo(
-            photo=foto,
-            caption="😈 essa é só uma prévia..."
+    user = update.effective_user.first_name
+
+    await update.message.reply_text(
+        f"oi {user}... 😏\n\n"
+        "tava te esperando aqui..."
+    )
+
+    # FOTO PRÉVIA
+    with open("previa.mp4", "rb") as video:
+    await update.message.reply_video(
+        video=video,
+        caption="😈 isso aqui é só uma prévia...\n\n"
+                "o resto eu não mostro aqui..."
+    ),
         )
 
+    # BOTÕES
     keyboard = [
-        [InlineKeyboardButton("💋 quero ver agora (R$25)", callback_data="25")],
-        [InlineKeyboardButton("🔥 Quero tudo por 1 mês (R$60)", callback_data="60")]
+        [InlineKeyboardButton("💋 Ver agora (pacote simples) (R$25)", callback_data="plano_25")],
+        [InlineKeyboardButton("🔥 Quero tudo (pacote completo) (R$60)", callback_data="plano_60")],
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
         "👇 escolhe como quer me ver:",
-        reply_markup=reply_markup
+        reply_markup=reply_markup,
     )
 
-# Quando clica no botão
+
+# =========================
+# ESCOLHA DE PLANO
+# =========================
 async def escolher_plano(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     query = update.callback_query
     await query.answer()
 
-    escolha = query.data
-    context.user_data["plano"] = escolha
+    plano = query.data
+    context.user_data["plano"] = plano
 
-    if escolha == "25":
+    if plano == "plano_25":
         await query.message.reply_text(
-            f"💋 perfeito...\n\n"
-            f"faz o pagamento aqui:\n{LINK_25}\n\n"
-            f"depois me envia o comprovante 😏"
+            "💋 boa escolha...\n\n"
+            "👇 paga aqui:\n"
+            f"{LINK_25}\n\n"
+            "me manda o comprovante pra liberar 😏"
         )
 
-    elif escolha == "60":
+    elif plano == "plano_60":
         await query.message.reply_text(
-            f"🔥 sabia que você ia querer mais...\n\n"
-            f"paga aqui:\n{LINK_60}\n\n"
-            f"e me manda o comprovante 💋"
+            "🔥 sabia que você queria tudo...\n\n"
+            "👇 paga aqui:\n"
+            f"{LINK_60}\n\n"
+            "me manda o comprovante 💋"
         )
 
-# Quando envia comprovante
+
+# =========================
+# RECEBER COMPROVANTE
+# =========================
 async def receber_comprovante(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    
-    if update.message.photo:
-        plano = context.user_data.get("plano")
 
-        if plano == "25":
+    plano = context.user_data.get("plano")
+
+    # SE ENVIOU FOTO
+    if update.message.photo:
+
+        if plano == "plano_25":
             await update.message.reply_text(
-                f"😏 certinho...\n\n"
-                f"👇 pede entrada aqui:\n{GRUPO_25}\n\n"
-                f"já já te aceito 💋"
+                "😏 já vi aqui...\n\n"
+                "👇 solicita entrada:\n"
+                f"{GRUPO_25}\n\n"
+                "te aceito lá 💋"
             )
 
-        elif plano == "60":
+        elif plano == "plano_60":
             await update.message.reply_text(
-                f"🔥 agora sim...\n\n"
-                f"👇 entra no VIP:\n{GRUPO_60}\n\n"
-                f"te aceito lá 😈"
+                "🔥 perfeito...\n\n"
+                "👇 entra no VIP:\n"
+                f"{GRUPO_60}\n\n"
+                "já já te libero 😈"
             )
 
         else:
             await update.message.reply_text(
-                "me fala qual plano você comprou 😉"
+                "😅 você ainda não escolheu um plano...\n"
+                "digita /start e escolhe 😉"
             )
 
     else:
         await update.message.reply_text(
-            "me envia o comprovante em foto 😉"
+            "me envia o comprovante em FOTO pra liberar 😉"
         )
 
-# rodar bot
-app = ApplicationBuilder().token(TOKEN).build()
 
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CallbackQueryHandler(escolher_plano))
-app.add_handler(MessageHandler(filters.ALL, receber_comprovante))
+# =========================
+# ERROS (IMPORTANTE)
+# =========================
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
+    print(f"Erro: {context.error}")
 
-print("Bot rodando...")
-app.run_polling()
+
+# =========================
+# MAIN
+# =========================
+def main():
+
+    app = (
+        ApplicationBuilder()
+        .token(TOKEN)
+        .connect_timeout(30)
+        .read_timeout(30)
+        .build()
+    )
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(escolher_plano))
+    app.add_handler(MessageHandler(filters.ALL, receber_comprovante))
+    app.add_error_handler(error_handler)
+
+    print("Bot rodando...")
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()
