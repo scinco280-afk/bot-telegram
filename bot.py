@@ -11,6 +11,9 @@ from telegram.ext import (
 
 TOKEN = os.getenv("TOKEN")
 
+if not TOKEN:
+    raise ValueError("TOKEN NÃO ESTÁ VINDO DO RAILWAY!")
+
 LINK_25 = "https://pay.kirvano.com/962361f0-a5d2-41e8-82a6-422f0b315cb8"
 LINK_60 = "https://pay.kirvano.com/7af1874d-b810-4366-964c-8d14c1fe581c"
 
